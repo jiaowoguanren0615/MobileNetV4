@@ -2,6 +2,7 @@
 
 # [MobileNetV4 -- Universal Models for the Mobile Ecosystem](https://arxiv.org/abs/2404.10518)
 This is a warehouse for MobileNetV4-Pytorch-model, can be used to train your image-datasets for vision tasks.  
+The code mainly comes from official [source code](https://github.com/tensorflow/models/blob/master/official/vision/modeling/backbones/mobilenet.py)
 
 ## Preparation
 ### Download the dataset: 
