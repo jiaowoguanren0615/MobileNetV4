@@ -92,8 +92,8 @@ def get_args_parser():
                         help='learning rate noise limit percent (default: 0.67)')
     parser.add_argument('--lr-noise-std', type=float, default=1.0, metavar='STDDEV',
                         help='learning rate noise std-dev (default: 1.0)')
-    parser.add_argument('--warmup-lr', type=float, default=1e-6, metavar='LR',
-                        help='warmup learning rate (default: 1e-6)')
+    parser.add_argument('--warmup-lr', type=float, default=1e-4, metavar='LR',
+                        help='warmup learning rate (default: 1e-4)')
     parser.add_argument('--min-lr', type=float, default=1e-5, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0 (1e-5)')
     parser.add_argument('--decay-epochs', type=float, default=30, metavar='N',
@@ -339,13 +339,15 @@ def main(args):
     print('number of params:', n_parameters)
 
     linear_scaled_lr = args.lr * args.batch_size * utils.get_world_size() / 512.0
-    args.lr = linear_scaled_lr
+    # args.lr = linear_scaled_lr
+    #
+    # print('*****************')
+    # print('Initial LR is ', linear_scaled_lr)
+    # print('*****************')
 
-    print('*****************')
-    print('Initial LR is ', linear_scaled_lr)
-    print('*****************')
+    optimizer = create_optimizer(args, model_without_ddp)
 
-    optimizer = SophiaG(model_without_ddp.parameters(), lr=2e-4, betas=(0.965, 0.99), rho=0.01, weight_decay=args.weight_decay) if args.finetune else create_optimizer(args, model_without_ddp)
+    # optimizer = SophiaG(model_without_ddp.parameters(), lr=2e-4, betas=(0.965, 0.99), rho=0.01, weight_decay=args.weight_decay) if args.finetune else create_optimizer(args, model_without_ddp)
 
     loss_scaler = NativeScaler()
     lr_scheduler, _ = create_scheduler(args, optimizer)
