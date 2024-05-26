@@ -397,8 +397,8 @@ def main(args):
     if args.output_dir and utils.is_main_process():
         with (output_dir / "args.txt").open("a") as f:
             f.write(json.dumps(args.__dict__, indent=2) + "\n")
-    if args.resume or os.path.exists(f'{args.output_dir}/best_checkpoint.pth'):
-        args.resume = f'{args.output_dir}/best_checkpoint.pth'
+    if args.resume or os.path.exists(f'{args.output_dir}/{args.model}_best_checkpoint.pth'):
+        args.resume = f'{args.output_dir}/{args.model}_best_checkpoint.pth'
         if args.resume.startswith('https'):
             checkpoint = torch.hub.load_state_dict_from_url(
                 args.resume, map_location='cpu', check_hash=True)
@@ -460,7 +460,7 @@ def main(args):
         if max_accuracy < test_stats["acc1"]:
             max_accuracy = test_stats["acc1"]
             if args.output_dir:
-                ckpt_path = os.path.join(output_dir, 'best_checkpoint.pth')
+                ckpt_path = os.path.join(output_dir, f'{args.model}_best_checkpoint.pth')
                 checkpoint_paths = [ckpt_path]
                 print("Saving checkpoint to {}".format(ckpt_path))
                 for checkpoint_path in checkpoint_paths:
@@ -500,8 +500,8 @@ def main(args):
 
         model_predict.to(device)
         print('*******************STARTING PREDICT*******************')
-        Predictor(model_predict, data_loader_val, f'{args.output_dir}/best_checkpoint.pth', device)
-        Plot_ROC(model_predict, data_loader_val, f'{args.output_dir}/best_checkpoint.pth', device)
+        Predictor(model_predict, data_loader_val, f'{args.output_dir}/{args.model}_best_checkpoint.pth', device)
+        Plot_ROC(model_predict, data_loader_val, f'{args.output_dir}/{args.model}_best_checkpoint.pth', device)
 
 
 if __name__ == '__main__':
