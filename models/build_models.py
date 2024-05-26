@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .model_config import MODEL_SPECS
+from models.model_config import MODEL_SPECS
 
 
 def make_divisible(
@@ -230,7 +230,7 @@ def mobilenetv4_hybrid_large(pretrained=False, pretrained_cfg=None, pretrained_c
 
 # if __name__ == '__main__':
 #     from torchinfo import summary
-#     model = mobilenetv4_small()
+#     model = mobilenetv4_hybrid_large()
 #     print("Check output shape ...")
 #     summary(model, input_size=(1, 3, 224, 224))
     # x = torch.rand(1, 3, 224, 224)
