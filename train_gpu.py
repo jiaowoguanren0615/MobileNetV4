@@ -491,7 +491,7 @@ def main(args):
     print('Training time {}'.format(total_time_str))
 
     # plot ROC curve and confusion matrix
-    if args.predict:
+    if args.predict and utils.is_main_process():
         model_predict = create_model(
             args.model,
             num_classes=args.nb_classes,
