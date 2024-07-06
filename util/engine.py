@@ -87,7 +87,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: DistillationLoss,
     return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
 
 
-@torch.no_grad()
+@torch.inference_mode()
 def evaluate(data_loader, model, device, epoch, writer, args, visualization=True):
     criterion = torch.nn.CrossEntropyLoss()
 
