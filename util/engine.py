@@ -120,7 +120,7 @@ def evaluate(data_loader: Iterable, model: torch.nn.Module,
         Evaluate the model for one epoch.
 
         Args:
-            data_loader (Iterable): The data loader for the training data.
+            data_loader (Iterable): The data loader for the valid data.
             model (torch.nn.Module): The model to be evaluated.
             device (torch.device): The device used for training (CPU or GPU).
             epoch (int): The current training epoch.
