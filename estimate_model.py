@@ -1,6 +1,6 @@
 import torch, json, os
 import seaborn as sns
-from sklearn.metrics import auc, f1_score, roc_curve, classification_report, confusion_matrix
+from sklearn.metrics import auc, f1_score, roc_curve, classification_report, confusion_matrix, roc_auc_score
 from itertools import cycle
 from numpy import interp
 import numpy as np
@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from torchvision import transforms
 from typing import Iterable
+from optim_AUC import OptimizeAUC
+from terminaltables import AsciiTable
 
 
 @torch.inference_mode()
@@ -264,3 +266,72 @@ def Predictor(net: torch.nn.Module, test_loader: Iterable, save_name: str, devic
 
     clr = classification_report(y_true, y_pred, target_names=classes, digits=4)
     print("Classification Report:\n----------------------\n", clr)
+
+
+@torch.inference_mode()
+def OptAUC(net: torch.nn.Module, val_loader: Iterable, save_name: str, device: torch.device):
+    """
+        Optimize model for improving AUC
+
+        Print a table of initial and optimized AUC and F1-score.
+
+        This function takes the initial and optimized AUC and F1-score, and generates
+        an ASCII table to display the results. The table will have the following format:
+
+        Optimize Results
+        +----------------------+----------------------+----------------------+----------------------+
+        | Initial AUC          | Initial F1-Score     | Optimize AUC         | Optimize F1-Score    |
+        +----------------------+----------------------+----------------------+----------------------+
+        | 0.654321             | 0.654321             | 0.876543             | 0.876543            |
+        +----------------------+----------------------+----------------------+----------------------+
+
+        The optimized AUC and F1-score are obtained by using the `OptimizeAUC` class (in ./optim_AUC.py), which
+        performs optimization on the initial metrics.
+
+        Args:
+            net (torch.nn.Module): The model to be evaluated.
+            test_loader (Iterable): The data loader for the valid data.
+            save_name (str): The file path of your model weights
+            device (torch.device): The device used for training (CPU or GPU).
+
+        Returns:
+            None
+    """
+
+    score_list = []
+    label_list = []
+
+    net.load_state_dict(torch.load(save_name)['model'])
+
+    for i, data in enumerate(val_loader):
+        images, labels = data
+        images, labels = images.to(device), labels.to(device)
+        outputs = torch.softmax(net(images), dim=1)
+        score_tmp = outputs
+        score_list.extend(score_tmp.detach().cpu().numpy())
+        label_list.extend(labels.detach().cpu().numpy())
+
+    score_array = np.array(score_list)
+    label_list = np.array(label_list)
+    y_preds = np.argmax(score_array, axis=1)
+    f1score = f1_score(label_list, y_preds, average='weighted') * 100
+    auc_score = roc_auc_score(label_list, score_array, average='weighted', multi_class='ovo')
+
+    opt_auc = OptimizeAUC()
+    opt_auc.fit(score_array, label_list)
+    opt_preds = opt_auc.predict(score_array)
+    opt_y_preds = np.argmax(opt_preds, axis=1)
+    opt_f1score = f1_score(label_list, opt_y_preds, average='weighted') * 100
+    opt_auc_score = roc_auc_score(label_list, opt_preds, average='weighted', multi_class='ovo')
+
+    TITLE = 'Optimize Results'
+    TABLE_DATA = (
+        ('Initial AUC', 'Initial F1-Score', 'Optimize AUC', 'Optimize F1-Score'),
+        ('{:.6f}'.format(auc_score),
+         '{:.6f}'.format(f1score),
+         '{:.6f}'.format(opt_auc_score),
+         '{:.6f}'.format(opt_f1score)
+         ),
+    )
+    table_instance = AsciiTable(TABLE_DATA, TITLE)
+    print(table_instance.table)

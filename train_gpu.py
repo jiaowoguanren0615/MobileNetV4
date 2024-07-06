@@ -43,7 +43,7 @@ from util.losses import DistillationLoss
 from datasets import build_dataset
 from datasets.threeaugment import new_data_aug_generator
 
-from estimate_model import Predictor, Plot_ROC
+from estimate_model import Predictor, Plot_ROC, OptAUC
 
 
 def get_args_parser():
@@ -52,6 +52,7 @@ def get_args_parser():
     parser.add_argument('--batch-size', default=16, type=int)
     parser.add_argument('--epochs', default=5, type=int)
     parser.add_argument('--predict', default=True, type=bool, help='plot ROC curve and confusion matrix')
+    parser.add_argument('--opt_auc', default=False, type=bool, help='Optimize AUC')
 
     # Model parameters
     parser.add_argument('--model', default='mobilenetv4_small', type=str, metavar='MODEL',
@@ -502,6 +503,9 @@ def main(args):
         print('*******************STARTING PREDICT*******************')
         Predictor(model_predict, data_loader_val, f'{args.output_dir}/{args.model}_best_checkpoint.pth', device)
         Plot_ROC(model_predict, data_loader_val, f'{args.output_dir}/{args.model}_best_checkpoint.pth', device)
+
+        if args.opt_auc:
+            OptAUC(model_predict, data_loader_val, f'{args.output_dir}/{args.model}_best_checkpoint.pth', device)
 
 
 if __name__ == '__main__':
