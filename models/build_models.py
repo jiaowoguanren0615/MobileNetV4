@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from model_config import MODEL_SPECS
+from .model_config import MODEL_SPECS
 
 
 def make_divisible(
