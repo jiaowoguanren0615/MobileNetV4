@@ -23,3 +23,4 @@ dependencies:
       - torchinfo==1.7.2
       - torchvision==0.15.2+cu118
       - transformers==4.28.1
+      - seaborn==0.13.2
