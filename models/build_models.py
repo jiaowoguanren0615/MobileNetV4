@@ -291,7 +291,7 @@ def build_blocks(layer_spec):
 
 
 class MobileNetV4(nn.Module):
-    def __init__(self, model, num_classes=1000):
+    def __init__(self, model, num_classes=1000, **kwargs):
         # MobileNetV4ConvSmall  MobileNetV4ConvMedium  MobileNetV4ConvLarge
         # MobileNetV4HybridMedium  MobileNetV4HybridLarge
         """Params to initiate MobilenNetV4
