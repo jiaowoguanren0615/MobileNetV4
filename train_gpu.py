@@ -493,11 +493,12 @@ def main(args):
 
     # plot ROC curve and confusion matrix
     if args.predict and utils.is_main_process():
-        model_predict = create_model(
-            args.model,
-            num_classes=args.nb_classes,
-            args=args
-        )
+        # model_predict = create_model(
+        #     args.model,
+        #     num_classes=args.nb_classes,
+        #     args=args
+        # )
+        model_predict = mobilenetv4_small(num_classes=args.nb_classes)
 
         model_predict.to(device)
         print('*******************STARTING PREDICT*******************')
