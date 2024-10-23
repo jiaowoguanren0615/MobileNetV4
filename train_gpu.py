@@ -167,7 +167,7 @@ def get_args_parser():
                         help='set BN layers to eval mode during finetuning.')
 
     # Dataset parameters
-    parser.add_argument('--data_root', default='/usr/local/MyObjData/flower_data', type=str,
+    parser.add_argument('--data_root', default='/mnt/d/flower_data', type=str,
                         help='dataset path')
     parser.add_argument('--nb_classes', default=5, type=int,
                         help='number classes of your dataset')
@@ -287,13 +287,13 @@ def main(args):
 
     print(f"Creating model: {args.model}")
 
-    # model = create_model(
-    #     args.model,
-    #     num_classes=args.nb_classes,
-    #     args=args
-    # )
+    model = create_model(
+        args.model,
+        num_classes=args.nb_classes,
+        args=args
+    )
 
-    model = mobilenetv4_small(num_classes=args.nb_classes)
+    # model = mobilenetv4_small(num_classes=args.nb_classes)
 
     if args.finetune:
         if args.finetune.startswith('https'):
@@ -493,12 +493,12 @@ def main(args):
 
     # plot ROC curve and confusion matrix
     if args.predict and utils.is_main_process():
-        # model_predict = create_model(
-        #     args.model,
-        #     num_classes=args.nb_classes,
-        #     args=args
-        # )
-        model_predict = mobilenetv4_small(num_classes=args.nb_classes)
+        model_predict = create_model(
+            args.model,
+            num_classes=args.nb_classes,
+            args=args
+        )
+        # model_predict = mobilenetv4_small(num_classes=args.nb_classes)
 
         model_predict.to(device)
         print('*******************STARTING PREDICT*******************')
