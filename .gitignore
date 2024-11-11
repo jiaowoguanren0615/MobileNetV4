@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# ckpt files
+*.safetensors
+*.bin
+
 # C extensions
 *.so
 

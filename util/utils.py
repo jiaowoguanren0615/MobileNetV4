@@ -11,6 +11,9 @@ import logging
 import torch
 import torch.nn as nn
 import torch.distributed as dist
+import safetensors
+
+
 
 logger = logging.getLogger()
 
@@ -272,5 +275,43 @@ def load_model(modelpath, model: nn.Module):
     A function to load model from a checkpoint, which is used
     for fine-tuning on a different resolution.
     '''
-    checkpoint = torch.load(modelpath, map_location='cpu')
+    if 'safetensors' in modelpath:
+        checkpoint = safetensors.torch.load_file(modelpath)
+    else:
+        checkpoint = torch.load(modelpath, map_location='cpu')
     return checkpoint
+
+
+def map_safetensors(safetensor_ckpt, model_state_dict):
+    '''
+    A function to load model from a safetensor file, which is used
+    for fine-tuning on a different resolution.
+    '''
+    safetensors_keys = list(safetensor_ckpt.keys())
+    key_mapping = {}
+    mismatched_keys = []
+
+    for model_key in model_state_dict.keys():
+        # 尝试在 safetensors_keys 中找到与模型键类似的键
+        for safetensor_key in safetensors_keys:
+            if model_key.split('.')[-1] == safetensor_key.split('.')[-1] and \
+                    model_state_dict[model_key].shape == safetensor_ckpt[safetensor_key].shape:
+                key_mapping[model_key] = safetensor_key
+                # print(f"Mapping model layer '{model_key}' to safetensors layer '{safetensor_key}'")
+                break
+        else:
+            # 如果没有找到匹配的层，则记录为不匹配
+            mismatched_keys.append(model_key)
+
+    # 显示所有未匹配的模型键
+    if mismatched_keys:
+        print("\nUnmatched model keys:")
+        for key in mismatched_keys:
+            print(key)
+
+    # 创建一个新的 state_dict，将 safetensors 文件中的权重映射到模型中
+    mapped_state_dict = {}
+    for model_key, safetensor_key in key_mapping.items():
+        mapped_state_dict[model_key] = safetensor_ckpt[safetensor_key]
+
+    return mapped_state_dict

@@ -203,4 +203,3 @@ def partial_transfert_learning(target_model,
     
     target_model.set_weights(new_weights)
     print("Weights transfered successfully !")
-        

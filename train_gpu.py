@@ -23,8 +23,10 @@ from torch.utils.tensorboard import SummaryWriter
 import json
 import os
 
+
 from pathlib import Path
 
+import timm
 from timm.data import Mixup
 from timm.models import create_model
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
@@ -55,11 +57,11 @@ def get_args_parser():
     parser.add_argument('--opt_auc', default=False, type=bool, help='Optimize AUC')
 
     # Model parameters
-    parser.add_argument('--model', default='mobilenetv4_small', type=str, metavar='MODEL',
+    parser.add_argument('--model', default='mobilenetv4_large', type=str, metavar='MODEL',
                         choices=['mobilenetv4_small', 'mobilenetv4_medium', 'mobilenetv4_large',
                                  'mobilenetv4_hybrid_medium', 'mobilenetv4_hybrid_large'],
                         help='Name of model to train')
-    parser.add_argument('--input-size', default=224, type=int, help='images input size')
+    parser.add_argument('--input-size', default=256, type=int, help='images input size')
     parser.add_argument('--model-ema', action='store_true')
     parser.add_argument('--no-model-ema', action='store_false', dest='model_ema')
     parser.set_defaults(model_ema=True)
@@ -160,7 +162,7 @@ def get_args_parser():
     parser.add_argument('--distillation-tau', default=1.0, type=float, help="")
 
     # Finetuning params
-    parser.add_argument('--finetune', default='',
+    parser.add_argument('--finetune', default='./model.safetensors',
                         help='finetune from checkpoint')
     parser.add_argument('--freeze_layers', type=bool, default=False, help='freeze layers')
     parser.add_argument('--set_bn_eval', action='store_true', default=False,
@@ -293,7 +295,6 @@ def main(args):
         args=args
     )
 
-    # model = mobilenetv4_small(num_classes=args.nb_classes)
 
     if args.finetune:
         if args.finetune.startswith('https'):
@@ -302,14 +303,16 @@ def main(args):
         else:
             checkpoint = utils.load_model(args.finetune, model)
 
-        checkpoint_model = checkpoint['model']
-        # state_dict = model.state_dict()
-        for k in list(checkpoint_model.keys()):
+        checkpoint_model = checkpoint
+        state_dict = model.state_dict()
+        new_state_dict = utils.map_safetensors(checkpoint_model, state_dict)
+
+        for k in list(new_state_dict.keys()):
             if 'head' in k:
                 print(f"Removing key {k} from pretrained checkpoint")
-                del checkpoint_model[k]
+                del new_state_dict[k]
 
-        msg = model.load_state_dict(checkpoint_model, strict=False)
+        msg = model.load_state_dict(new_state_dict, strict=False)
         print(msg)
 
         if args.freeze_layers:
@@ -318,7 +321,6 @@ def main(args):
                     para.requires_grad_(False)
                 else:
                     print('training {}'.format(name))
-
     model.to(device)
 
     model_ema = None
@@ -346,9 +348,8 @@ def main(args):
     # print('Initial LR is ', linear_scaled_lr)
     # print('*****************')
 
-    optimizer = create_optimizer(args, model_without_ddp)
-
-    # optimizer = SophiaG(model_without_ddp.parameters(), lr=2e-4, betas=(0.965, 0.99), rho=0.01, weight_decay=args.weight_decay) if args.finetune else create_optimizer(args, model_without_ddp)
+    # optimizer = create_optimizer(args, model_without_ddp)
+    optimizer = torch.optim.AdamW(model_without_ddp.parameters(), lr=2e-4, weight_decay=args.weight_decay) if args.finetune else create_optimizer(args, model_without_ddp)
 
     loss_scaler = NativeScaler()
     lr_scheduler, _ = create_scheduler(args, optimizer)
@@ -445,8 +446,8 @@ def main(args):
             model, criterion, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             args.clip_grad, args.clip_mode, model_ema, mixup_fn,
-            # set_training_mode=args.finetune == ''  # keep in eval mode during finetuning
-            set_training_mode=True,
+            set_training_mode=args.finetune == '',  # keep in eval mode during finetuning
+            # set_training_mode=True,
             set_bn_eval=args.set_bn_eval,  # set bn to eval if finetune
             writer=writer,
             args=args

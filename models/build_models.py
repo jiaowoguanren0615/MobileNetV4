@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .model_config import MODEL_SPECS
+from models.model_config import MODEL_SPECS
 
 
 def make_divisible(
@@ -366,12 +366,14 @@ def mobilenetv4_hybrid_large(pretrained=False, pretrained_cfg=None, pretrained_c
 
 
 # if __name__ == '__main__':
-#     from torchinfo import summary
-#     model = mobilenetv4_small()
-#     print("Check output shape ...")
-#     summary(model, input_size=(1, 3, 224, 224))
-    # x = torch.rand(1, 3, 224, 224)
-    # y = model(x)
-    # print(y.shape)
-    # for i in y:
-    #     print(i.shape)
+#
+#     model = mobilenetv4_large()
+#     print(model)
+#     model_state_dict = model.state_dict()
+#     ckpt = torch.load('../mobilenetv4_small.bin')
+#     new_state_dict = {}
+#     for model_key, pretrained_key in zip(model_state_dict.keys(), ckpt.keys()):
+#         new_state_dict[model_key] = ckpt[pretrained_key]
+#
+#     model.load_state_dict(new_state_dict)
+#     print('Pass')

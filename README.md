@@ -1,7 +1,7 @@
 <h1 align='center'>MobileNetV4</h1>
 
 # [MobileNetV4 -- Universal Models for the Mobile Ecosystem](https://arxiv.org/abs/2404.10518)
-## This is a warehouse for MobileNetV4-Pytorch-model, can be used to train your image-datasets for vision tasks.  
+## This project is implemented in PyTorch, can be used to train your image-datasets for vision tasks.  
 ## [official source code](https://github.com/tensorflow/models/blob/master/official/vision/modeling/backbones/mobilenet.py)  
 ## For segmentation tasks, please refer this [github warehouse](https://github.com/jiaowoguanren0615/Segmentation_Factory/blob/main/models/backbones/mobilenetv4.py)  
 ![image](https://github.com/jiaowoguanren0615/MobileNetV4/blob/main/sample_png/mobilenetV4.jpg)  
