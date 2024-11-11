@@ -162,7 +162,7 @@ def get_args_parser():
     parser.add_argument('--distillation-tau', default=1.0, type=float, help="")
 
     # Finetuning params
-    parser.add_argument('--finetune', default='./model.safetensors',
+    parser.add_argument('--finetune', default='',
                         help='finetune from checkpoint')
     parser.add_argument('--freeze_layers', type=bool, default=False, help='freeze layers')
     parser.add_argument('--set_bn_eval', action='store_true', default=False,
@@ -295,7 +295,6 @@ def main(args):
         args=args
     )
 
-
     if args.finetune:
         if args.finetune.startswith('https'):
             checkpoint = torch.hub.load_state_dict_from_url(
@@ -305,19 +304,19 @@ def main(args):
 
         checkpoint_model = checkpoint
         state_dict = model.state_dict()
-        new_state_dict = utils.map_safetensors(checkpoint_model, state_dict)
-
-        for k in list(new_state_dict.keys()):
-            if 'head' in k:
+        # new_state_dict = utils.map_safetensors(checkpoint_model, state_dict)
+        
+        for k in list(checkpoint_model.keys()):
+            if 'classifier' in k:
                 print(f"Removing key {k} from pretrained checkpoint")
-                del new_state_dict[k]
+                del checkpoint_model[k]
 
-        msg = model.load_state_dict(new_state_dict, strict=False)
+        msg = model.load_state_dict(checkpoint_model, strict=False)
         print(msg)
 
         if args.freeze_layers:
             for name, para in model.named_parameters():
-                if 'head' not in name:
+                if 'classifier' not in name:
                     para.requires_grad_(False)
                 else:
                     print('training {}'.format(name))
@@ -499,7 +498,6 @@ def main(args):
             num_classes=args.nb_classes,
             args=args
         )
-        # model_predict = mobilenetv4_small(num_classes=args.nb_classes)
 
         model_predict.to(device)
         print('*******************STARTING PREDICT*******************')
