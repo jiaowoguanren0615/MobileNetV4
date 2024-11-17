@@ -305,7 +305,7 @@ def main(args):
         checkpoint_model = checkpoint
         state_dict = model.state_dict()
         # new_state_dict = utils.map_safetensors(checkpoint_model, state_dict)
-        
+
         for k in list(checkpoint_model.keys()):
             if 'classifier' in k:
                 print(f"Removing key {k} from pretrained checkpoint")

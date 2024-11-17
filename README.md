@@ -4,6 +4,7 @@
 ## This project is implemented in PyTorch, can be used to train your image-datasets for vision tasks.  
 ## [official source code](https://github.com/tensorflow/models/blob/master/official/vision/modeling/backbones/mobilenet.py)  
 ## For segmentation tasks, please refer this [github warehouse](https://github.com/jiaowoguanren0615/Segmentation_Factory/blob/main/models/backbones/mobilenetv4.py)  
+## For detection tasks(___Based on DETR Detector architecture___), please refer this [github warehouse](https://github.com/jiaowoguanren0615/Detection-Factory/blob/main/configs/salience_detr_mobilenetv4_medium_800_1333.py)  
 ![image](https://github.com/jiaowoguanren0615/MobileNetV4/blob/main/sample_png/mobilenetV4.jpg)  
 
 
