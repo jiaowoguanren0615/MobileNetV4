@@ -112,3 +112,7 @@ python onnx_validate.py --data_root=/mnt/d/flower_data --onnx-input=./mobilenetv
   year={2024}
 }
 ```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jiaowoguanren0615/MobileNetV4&type=Date)](https://star-history.com/#jiaowoguanren0615/MobileNetV4&Date)
