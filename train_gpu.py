@@ -38,7 +38,7 @@ from models import *
 
 from util.samplers import RASampler
 from util import utils as utils
-from util.optimizer import SophiaG
+from util.optimizer import SophiaG, MARS
 from util.engine import train_one_epoch, evaluate
 from util.losses import DistillationLoss
 
@@ -89,6 +89,8 @@ def get_args_parser():
                         help='LR scheduler (default: "cosine"')
     parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
                         help='learning rate (default: 1e-3)')
+    parser.add_argument('--adamw_lr', type=float, default=3e-3, metavar='AdamWLR',
+                        help='Using MARS optimizer, learning rate for adamw(default: 3e-3)')
     parser.add_argument('--lr-noise', type=float, nargs='+', default=None, metavar='pct, pct',
                         help='learning rate noise on/off epoch percentages')
     parser.add_argument('--lr-noise-pct', type=float, default=0.67, metavar='PERCENT',
