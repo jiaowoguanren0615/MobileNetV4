@@ -26,7 +26,7 @@ conda env create -f environment.yml
     ├── split_data.py: Define the function to read the image dataset and divide the training-set and test-set
     ├── threeaugment.py: Additional data augmentation methods
 ├── models: MobileNetV4 Model
-    ├── build_models.py: Construct MobileNetV4 models
+    ├── build_mobilenet_v4.py: Construct MobileNetV4 models
 ├── util:
     ├── engine.py: Function code for a training/validation process
     ├── losses.py: Knowledge distillation loss, combined with teacher model (if any)
