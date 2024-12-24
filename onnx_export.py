@@ -24,15 +24,17 @@ parser.add_argument('--output', metavar='ONNX_FILE', default=None, type=str,
                     help='output model filename')
 
 # Model & datasets params
-parser.add_argument('--model', type=str, default='mobilenetv4_small',
-                    choices=['mobilenetv4_small', 'mobilenetv4_medium', 'mobilenetv4_large',
-                             'mobilenetv4_hybrid_medium', 'mobilenetv4_hybrid_large'],
-                    help='model architecture (default: mobilenetv4_small)')
-parser.add_argument('--checkpoint', default='./output/mobilenetv4_small_best_checkpoint.pth', type=str, metavar='PATH',
+parser.add_argument('--model', default='mobilenetv4_conv_large', type=str, metavar='MODEL',
+                        choices=['mobilenetv4_hybrid_large', 'mobilenetv4_hybrid_medium', 'mobilenetv4_hybrid_large_075',
+                                'mobilenetv4_conv_large', 'mobilenetv4_conv_aa_large', 'mobilenetv4_conv_medium',
+                                 'mobilenetv4_conv_aa_medium', 'mobilenetv4_conv_small', 'mobilenetv4_hybrid_medium_075',
+                                 'mobilenetv4_conv_small_035', 'mobilenetv4_conv_small_050', 'mobilenetv4_conv_blur_medium'],
+                        help='Name of model to train')
+parser.add_argument('--checkpoint', default='./output/mobilenetv4_conv_large_best_checkpoint.pth', type=str, metavar='PATH',
                     help='path to checkpoint (default: none)')
 parser.add_argument('--batch-size', default=1, type=int,
                     metavar='N', help='mini-batch size (default: 1)')
-parser.add_argument('--img-size', default=224, type=int,
+parser.add_argument('--img-size', default=384, type=int,
                     metavar='N', help='Input image dimension, uses model default if empty')
 parser.add_argument('--nb-classes', type=int, default=5,
                     help='Number classes in datasets')

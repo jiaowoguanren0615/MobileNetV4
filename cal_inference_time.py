@@ -9,10 +9,12 @@ from timm.models import create_model
 
 parser = argparse.ArgumentParser(description='PyTorch MobileNetV4 Inference Speed Test')
 # Model params
-parser.add_argument('--model', type=str, default='mobilenetv4_small',
-                    choices=['mobilenetv4_small', 'mobilenetv4_medium', 'mobilenetv4_large',
-                             'mobilenetv4_hybrid_medium', 'mobilenetv4_hybrid_large'],
-                    help='model architecture (default: mobilenetv4_small)')
+parser.add_argument('--model', default='mobilenetv4_conv_large', type=str, metavar='MODEL',
+                        choices=['mobilenetv4_hybrid_large', 'mobilenetv4_hybrid_medium', 'mobilenetv4_hybrid_large_075',
+                                'mobilenetv4_conv_large', 'mobilenetv4_conv_aa_large', 'mobilenetv4_conv_medium',
+                                 'mobilenetv4_conv_aa_medium', 'mobilenetv4_conv_small', 'mobilenetv4_hybrid_medium_075',
+                                 'mobilenetv4_conv_small_035', 'mobilenetv4_conv_small_050', 'mobilenetv4_conv_blur_medium'],
+                        help='Name of model to train')
 parser.add_argument('--device', default='cuda', type=str)
 parser.add_argument('--batch-size', default=32, type=int, help='batch size (default: 32)')
 parser.add_argument('--img-size', default=224, type=int,

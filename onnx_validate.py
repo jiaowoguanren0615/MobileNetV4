@@ -16,9 +16,9 @@ from datasets import MyDataset, build_transform, read_split_data
 
 
 parser = argparse.ArgumentParser(description='Pytorch ONNX Validation')
-parser.add_argument('--data_root', default='/mnt/d/flower_data', type=str,
+parser.add_argument('--data_root', default='D:/flower_data', type=str,
                     help='path to datasets')
-parser.add_argument('--onnx-input', default='./mobilenetv4_small_optim.onnx', type=str, metavar='PATH',
+parser.add_argument('--onnx-input', default='./mobilenetv4_conv_large_optim.onnx', type=str, metavar='PATH',
                     help='path to onnx model/weights file')
 parser.add_argument('--onnx-output-opt', default='', type=str, metavar='PATH',
                     help='path to output optimized onnx graph')
@@ -28,7 +28,7 @@ parser.add_argument('--workers', default=2, type=int, metavar='N',
                     help='number of data loading workers (default: 2)')
 parser.add_argument('--batch-size', default=16, type=int,
                     metavar='N', help='mini-batch size (default: 16), as same as the train_batch_size in train_gpu.py')
-parser.add_argument('--img-size', default=224, type=int,
+parser.add_argument('--img-size', default=384, type=int,
                     metavar='N', help='Input image dimension, uses model default if empty')
 parser.add_argument('--mean', type=float, nargs='+', default=None, metavar='MEAN',
                     help='Override mean pixel value of datasets')

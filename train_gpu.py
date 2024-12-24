@@ -35,6 +35,7 @@ from timm.optim import create_optimizer
 from timm.utils import NativeScaler, get_state_dict, ModelEma
 
 from models import *
+from safetensors.torch import load_file
 
 from util.samplers import RASampler
 from util import utils as utils
@@ -57,11 +58,13 @@ def get_args_parser():
     parser.add_argument('--opt_auc', default=False, type=bool, help='Optimize AUC')
 
     # Model parameters
-    parser.add_argument('--model', default='mobilenetv4_large', type=str, metavar='MODEL',
-                        choices=['mobilenetv4_small', 'mobilenetv4_medium', 'mobilenetv4_large',
-                                 'mobilenetv4_hybrid_medium', 'mobilenetv4_hybrid_large'],
+    parser.add_argument('--model', default='mobilenetv4_conv_large', type=str, metavar='MODEL',
+                        choices=['mobilenetv4_hybrid_large', 'mobilenetv4_hybrid_medium', 'mobilenetv4_hybrid_large_075',
+                                'mobilenetv4_conv_large', 'mobilenetv4_conv_aa_large', 'mobilenetv4_conv_medium',
+                                 'mobilenetv4_conv_aa_medium', 'mobilenetv4_conv_small', 'mobilenetv4_hybrid_medium_075',
+                                 'mobilenetv4_conv_small_035', 'mobilenetv4_conv_small_050', 'mobilenetv4_conv_blur_medium'],
                         help='Name of model to train')
-    parser.add_argument('--input-size', default=256, type=int, help='images input size')
+    parser.add_argument('--input-size', default=384, type=int, help='images input size')
     parser.add_argument('--model-ema', action='store_true')
     parser.add_argument('--no-model-ema', action='store_false', dest='model_ema')
     parser.set_defaults(model_ema=True)
@@ -164,14 +167,14 @@ def get_args_parser():
     parser.add_argument('--distillation-tau', default=1.0, type=float, help="")
 
     # Finetuning params
-    parser.add_argument('--finetune', default='',
+    parser.add_argument('--finetune', default='./models/model.safetensors',
                         help='finetune from checkpoint')
-    parser.add_argument('--freeze_layers', type=bool, default=False, help='freeze layers')
+    parser.add_argument('--freeze_layers', type=bool, default=True, help='freeze layers')
     parser.add_argument('--set_bn_eval', action='store_true', default=False,
                         help='set BN layers to eval mode during finetuning.')
 
     # Dataset parameters
-    parser.add_argument('--data_root', default='/mnt/d/flower_data', type=str,
+    parser.add_argument('--data_root', default='D:/flower_data', type=str,
                         help='dataset path')
     parser.add_argument('--nb_classes', default=5, type=int,
                         help='number classes of your dataset')
@@ -293,9 +296,9 @@ def main(args):
 
     model = create_model(
         args.model,
-        num_classes=args.nb_classes,
         args=args
     )
+    model.reset_classifier(num_classes=args.nb_classes)
 
     if args.finetune:
         if args.finetune.startswith('https'):
@@ -305,7 +308,7 @@ def main(args):
             checkpoint = utils.load_model(args.finetune, model)
 
         checkpoint_model = checkpoint
-        state_dict = model.state_dict()
+        # state_dict = model.state_dict()
         # new_state_dict = utils.map_safetensors(checkpoint_model, state_dict)
 
         for k in list(checkpoint_model.keys()):
@@ -435,7 +438,7 @@ def main(args):
         print(
             f"Accuracy of the network on the {len(dataset_val)} test images: {test_stats['acc1']:.1f}%"
         )
-
+    # print(model)
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
 
@@ -497,10 +500,10 @@ def main(args):
     if args.predict and utils.is_main_process():
         model_predict = create_model(
             args.model,
-            num_classes=args.nb_classes,
             args=args
         )
 
+        model_predict.reset_classifier(num_classes=args.nb_classes)
         model_predict.to(device)
         print('*******************STARTING PREDICT*******************')
         Predictor(model_predict, data_loader_val, f'{args.output_dir}/{args.model}_best_checkpoint.pth', device)
