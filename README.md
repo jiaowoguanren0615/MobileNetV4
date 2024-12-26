@@ -27,10 +27,11 @@ conda env create -f environment.yml
     ├── threeaugment.py: Additional data augmentation methods
 ├── models: MobileNetV4 Model
     ├── build_mobilenet_v4.py: Construct MobileNetV4 models
+    ├── extra_attention_block.py: MultiScaleAttentionGate module
 ├── util:
     ├── engine.py: Function code for a training/validation process
     ├── losses.py: Knowledge distillation loss, combined with teacher model (if any)
-    ├── optimizer.py: Define Sophia optimizer
+    ├── optimizer.py: Define Sophia/MARS optimizer
     ├── samplers.py: Define the parameter of "sampler" in DataLoader
     ├── utils.py: Record various indicator information and output and distributed environment
 ├── estimate_model.py: Visualized evaluation indicators ROC curve, confusion matrix, classification report, etc.
@@ -39,6 +40,7 @@ conda env create -f environment.yml
 
 ## Precautions
 Before you use the code to train your own data set, please first enter the ___train_gpu.py___ file and modify the ___data_root___, ___batch_size___, ___num_workers___ and ___nb_classes___ parameters. If you want to draw the confusion matrix and ROC curve, you only need to set the ___predict___ parameter to __True__.  
+If you want to add an extra MSAG(MultiScaleAttentionGate) module, set the __extra_attention_block__ parameter to True.  
 Moreover, you can set the ___opt_auc___ parameter to True if you want to optimize your model for a better performance(maybe~).  
 
 ## Use Sophia Optimizer (in util/optimizer.py)

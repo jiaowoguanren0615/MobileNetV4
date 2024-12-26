@@ -23,6 +23,7 @@ from models.model_utils import BlockArgs, EfficientNetBuilder, decode_arch_def, 
 from timm.models._features import FeatureInfo, FeatureHooks, feature_take_indices
 from timm.models._manipulate import checkpoint_seq
 from timm.models._registry import generate_default_cfgs, register_model
+from models.extra_attention_block import MultiScaleAttentionGate
 
 
 __all__ = ['MobileNetV4', 'MobileNetV4Features']
@@ -65,6 +66,7 @@ class MobileNetV4(nn.Module):
             drop_path_rate: float = 0.,
             layer_scale_init_value: Optional[float] = None,
             global_pool: str = 'avg',
+            extra_attention_block: bool = False,
             **kwargs
     ):
         """
@@ -96,6 +98,7 @@ class MobileNetV4(nn.Module):
         self.num_classes = num_classes
         self.drop_rate = drop_rate
         self.grad_checkpointing = False
+        self.extra_attention_block = MultiScaleAttentionGate(960) if extra_attention_block else None
 
         # Stem
         if not fix_stem:
@@ -256,6 +259,8 @@ class MobileNetV4(nn.Module):
             x = checkpoint_seq(self.blocks, x, flatten=True)
         else:
             x = self.blocks(x)
+        if self.extra_attention_block:
+            x = self.extra_attention_block(x)
         return x
 
     def forward_head(self, x: torch.Tensor, pre_logits: bool = False) -> torch.Tensor:
@@ -411,7 +416,6 @@ def _create_mnv4(variant: str, pretrained=False, pretrained_cfg=None, pretrained
     )
     if features_mode == 'cls':
         model.default_cfg = pretrained_cfg_for_features(model.default_cfg)
-    return model
     return model
 
 
@@ -911,12 +915,12 @@ def mobilenetv4_hybrid_large_075(pretrained=False, pretrained_cfg=None, pretrain
 
 
 # if __name__ == '__main__':
-#     # from torchinfo import summary
+#     from torchinfo import summary
 #     from safetensors.torch import load_file
-#     net = mobilenetv4_conv_large(num_classes=1000)
+#     net = mobilenetv4_conv_large(num_classes=5, extra_attention_block=True)
 #     ckpt = load_file('./model.safetensors')
 #     del ckpt['classifier.bias'], ckpt['classifier.weight']
 #     # print(ckpt.keys())
 #     net.load_state_dict(ckpt, strict=False)
 #     print(net)
-    # summary(net, input_size=(1, 3, 384, 384))
+#     summary(net, input_size=(1, 3, 384, 384))

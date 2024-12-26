@@ -30,6 +30,7 @@ parser.add_argument('--model', default='mobilenetv4_conv_large', type=str, metav
                                  'mobilenetv4_conv_aa_medium', 'mobilenetv4_conv_small', 'mobilenetv4_hybrid_medium_075',
                                  'mobilenetv4_conv_small_035', 'mobilenetv4_conv_small_050', 'mobilenetv4_conv_blur_medium'],
                         help='Name of model to train')
+parser.add_argument('--extra_attention_block', default=False, type=bool, help='Add an extra attention block')
 parser.add_argument('--checkpoint', default='./output/mobilenetv4_conv_large_best_checkpoint.pth', type=str, metavar='PATH',
                     help='path to checkpoint (default: none)')
 parser.add_argument('--batch-size', default=1, type=int,
@@ -71,6 +72,7 @@ def main():
     model = create_model(
         args.model,
         num_classes=args.nb_classes,
+        extra_attention_block=args.extra_attention_block,
         # exportable=True
     )
 

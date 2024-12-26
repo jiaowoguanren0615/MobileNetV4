@@ -64,6 +64,7 @@ def get_args_parser():
                                  'mobilenetv4_conv_aa_medium', 'mobilenetv4_conv_small', 'mobilenetv4_hybrid_medium_075',
                                  'mobilenetv4_conv_small_035', 'mobilenetv4_conv_small_050', 'mobilenetv4_conv_blur_medium'],
                         help='Name of model to train')
+    parser.add_argument('--extra_attention_block', default=True, type=bool, help='Add an extra attention block')
     parser.add_argument('--input-size', default=384, type=int, help='images input size')
     parser.add_argument('--model-ema', action='store_true')
     parser.add_argument('--no-model-ema', action='store_false', dest='model_ema')
@@ -296,6 +297,7 @@ def main(args):
 
     model = create_model(
         args.model,
+        extra_attention_block=args.extra_attention_block,
         args=args
     )
     model.reset_classifier(num_classes=args.nb_classes)
@@ -323,8 +325,12 @@ def main(args):
             for name, para in model.named_parameters():
                 if 'classifier' not in name:
                     para.requires_grad_(False)
-                else:
-                    print('training {}'.format(name))
+                # else:
+                #     print('training {}'.format(name))
+            if args.extra_attention_block:
+                for name, para in model.extra_attention_block.named_parameters():
+                    para.requires_grad_(True)
+
     model.to(device)
 
     model_ema = None
@@ -500,6 +506,7 @@ def main(args):
     if args.predict and utils.is_main_process():
         model_predict = create_model(
             args.model,
+            extra_attention_block=args.extra_attention_block,
             args=args
         )
 
