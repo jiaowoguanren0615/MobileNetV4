@@ -64,7 +64,7 @@ def get_args_parser():
                                  'mobilenetv4_conv_aa_medium', 'mobilenetv4_conv_small', 'mobilenetv4_hybrid_medium_075',
                                  'mobilenetv4_conv_small_035', 'mobilenetv4_conv_small_050', 'mobilenetv4_conv_blur_medium'],
                         help='Name of model to train')
-    parser.add_argument('--extra_attention_block', default=True, type=bool, help='Add an extra attention block')
+    parser.add_argument('--extra_attention_block', default=False, type=bool, help='Add an extra attention block')
     parser.add_argument('--input-size', default=384, type=int, help='images input size')
     parser.add_argument('--model-ema', action='store_true')
     parser.add_argument('--no-model-ema', action='store_false', dest='model_ema')
