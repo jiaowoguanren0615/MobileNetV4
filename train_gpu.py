@@ -456,8 +456,8 @@ def main(args):
             model, criterion, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             args.clip_grad, args.clip_mode, model_ema, mixup_fn,
-            set_training_mode=args.finetune == '',  # keep in eval mode during finetuning
-            # set_training_mode=True,
+            # set_training_mode=args.finetune == '',  # keep in eval mode during finetuning
+            set_training_mode=True,
             set_bn_eval=args.set_bn_eval,  # set bn to eval if finetune
             writer=writer,
             args=args
