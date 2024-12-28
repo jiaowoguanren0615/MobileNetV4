@@ -62,8 +62,9 @@ optimizer = SophiaG(model.parameters(), lr=2e-4, betas=(0.965, 0.99), rho=0.01, 
 6. master_port: <master node (machine/server) port number>
 ```
 ### Transfer Learning:
-Step 1: Write the ___pre-training weight path___ into the ___args.finetune___ in string format.  
-Step 2: Modify the ___args.freeze_layers___ according to your own GPU memory. If you don't have enough memory, you can set this to True to freeze the weights of the remaining layers except the last layer of classification-head without updating the parameters. If you have enough memory, you can set this to False and not freeze the model weights. For this project, I recommend that set it to ___True___.  
+Step 1: Download the [pretrained-weights](https://huggingface.co/timm/mobilenetv4_conv_large.e500_r256_in1k#model-comparison)
+Step 2: Write the ___pre-training weight path___ into the ___args.finetune___ in string format. Adjust ___args.input_size___ parameter based on the model pre-trained on images of different sizes.  
+Step 3: Modify the ___args.freeze_layers___ according to your own GPU memory. If you don't have enough memory, you can set this to True to freeze the weights of the remaining layers except the last layer of classification-head without updating the parameters. If you have enough memory, you can set this to False and not freeze the model weights. For this project, I recommend that set it to ___True___.  
 
 #### Here is an example for setting parameters:
 ![image](https://github.com/jiaowoguanren0615/VisionTransformer/blob/main/sample_png/transfer_learning.jpg)  
