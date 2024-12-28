@@ -61,6 +61,13 @@ optimizer = SophiaG(model.parameters(), lr=2e-4, betas=(0.965, 0.99), rho=0.01, 
 5. master_addr: <master node (machine/server) IP address>
 6. master_port: <master node (machine/server) port number>
 ```
+### Transfer Learning:
+Step 1: Write the ___pre-training weight path___ into the ___args.finetune___ in string format.  
+Step 2: Modify the ___args.freeze_layers___ according to your own GPU memory. If you don't have enough memory, you can set this to True to freeze the weights of the remaining layers except the last layer of classification-head without updating the parameters. If you have enough memory, you can set this to False and not freeze the model weights. For this project, I recommend that set it to ___True___.  
+
+#### Here is an example for setting parameters:
+![image](https://github.com/jiaowoguanren0615/VisionTransformer/blob/main/sample_png/transfer_learning.jpg)  
+
 ### Note: 
 If you want to use multiple GPU for training, whether it is a single machine with multiple GPUs or multiple machines with multiple GPUs, each GPU will divide the batch_size equally. For example, batch_size=4 in my train_gpu.py. If I want to use 2 GPUs for training, it means that the batch_size on each GPU is 4. ___Do not let batch_size=1 on each GPU___, otherwise BN layer maybe report an error. 
 
