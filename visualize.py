@@ -1,8 +1,3 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-# All rights reserved.
-
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
 import json
 import matplotlib
 import numpy as np
@@ -17,6 +12,10 @@ from timm.models import create_model
 
 import urllib.request
 
+
+device = 'cuda'
+
+
 def download_from_url(url, path=None, root="./"):
     if path is None:
         _, filename = os.path.split(url)
@@ -25,8 +24,6 @@ def download_from_url(url, path=None, root="./"):
     urllib.request.urlretrieve(url, path)
     print(f"Downloaded file to {path}")
 
-
-device = 'cuda'
 
 def load_class_names(json_path):
     with open(json_path, "r") as f:
@@ -37,14 +34,14 @@ def preprocess_image(image_path):
     transform = transforms.Compose([
         transforms.Resize((224, 224), interpolation=3),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # 正规化
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalized
     ])
     return transform(image)
 
 
 @torch.inference_mode()
-def predict_probs_for_image(model, image_path, texts):
-    image = preprocess_image(image_path).unsqueeze(0)
+def predict_probs_for_image(model, image_path):
+    image = preprocess_image(image_path).unsqueeze(0) # add batch dim
     model.eval()
     outputs = model(image.to(device))
     probs = torch.nn.functional.softmax(outputs, dim=1).cpu()
@@ -100,7 +97,7 @@ def predict_probs_and_plot(
         image = Image.open(image_path).convert('RGB')
         ax_1.imshow(image)
         ax_1.axis("off")
-    probs = predict_probs_for_image(model, image_path, texts)
+    probs = predict_probs_for_image(model, image_path)
     # print(probs)
     plot_probs(texts, probs, (fig, ax_2), lang_type=lang_type, save_path='./prediction_probs.png')
 
