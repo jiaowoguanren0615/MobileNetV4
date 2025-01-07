@@ -170,7 +170,7 @@ def get_args_parser():
     # Finetuning params
     parser.add_argument('--finetune', default='./models/model.safetensors',
                         help='finetune from checkpoint')
-    parser.add_argument('--freeze_layers', type=bool, default=True, help='freeze layers')
+    parser.add_argument('--freeze_layers', type=bool, default=False, help='freeze layers')
     parser.add_argument('--set_bn_eval', action='store_true', default=False,
                         help='set BN layers to eval mode during finetuning.')
 
