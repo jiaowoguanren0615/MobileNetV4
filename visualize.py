@@ -98,7 +98,6 @@ def predict_probs_and_plot(
         ax_1.imshow(image)
         ax_1.axis("off")
     probs = predict_probs_for_image(model, image_path)
-    # print(probs)
     plot_probs(texts, probs, (fig, ax_2), lang_type=lang_type, save_path='./prediction_probs.png')
 
 

@@ -118,7 +118,7 @@ def Plot_ROC(net: torch.nn.Module, val_loader: Iterable, save_name: str, device:
 
 
 @torch.inference_mode()
-def predict_single_image(model: torch.nn.Module, device: torch.device):
+def predict_single_image(model: torch.nn.Module, device: torch.device, weight_path: str):
     """
         Predict Single Image.
 
@@ -127,6 +127,7 @@ def predict_single_image(model: torch.nn.Module, device: torch.device):
         Args:
             model (torch.nn.Module): The model to be evaluated.
             device (torch.device): The device used for training (CPU or GPU).
+            weight_path (str): The model weights file
 
         Returns:
             None
@@ -163,8 +164,8 @@ def predict_single_image(model: torch.nn.Module, device: torch.device):
 
     # load model weights
 
-    assert os.path.exists('./save/checkpoint.pth'), "weight file dose not exist."
-    model.load_state_dict(torch.load('./save/checkpoint.pth', map_location=device)['model'])
+    assert os.path.exists(weight_path), "weight file dose not exist."
+    model.load_state_dict(torch.load(weight_path, map_location=device)['model'])
 
     model.eval()
     # predict class
